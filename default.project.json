@@ -1,0 +1,88 @@
+{
+  "name": "morph-duels",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      },
+      "Remotes": {
+        "$className": "Folder",
+        "InviteSend": { "$className": "RemoteEvent" },
+        "InviteCancel": { "$className": "RemoteEvent" },
+        "InviteAnswer": { "$className": "RemoteEvent" },
+        "InviteState": { "$className": "RemoteEvent" },
+        "DuelState": { "$className": "RemoteEvent" }
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "ServerStorage": {
+      "ArenaTemplate": {
+        "$path": "src/arena/ArenaTemplate.model.json"
+      },
+      "Forms": {
+        "$path": "assets/forms"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true,
+        "StreamingEnabled": false
+      },
+      "Baseplate": {
+        "$className": "Part",
+        "$properties": {
+          "Anchored": true,
+          "Color": [0.36, 0.55, 0.36],
+          "Locked": true,
+          "Material": "Grass",
+          "Size": [512, 20, 512],
+          "CFrame": {
+            "CFrame": {
+              "position": [0, -10, 0],
+              "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+            }
+          }
+        }
+      },
+      "HubSpawn": {
+        "$className": "SpawnLocation",
+        "$properties": {
+          "Anchored": true,
+          "Duration": 0,
+          "Size": [14, 1, 14],
+          "CFrame": {
+            "CFrame": {
+              "position": [0, 0.5, 0],
+              "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+            }
+          }
+        }
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "Ambient": [0.3, 0.3, 0.3],
+        "Brightness": 2,
+        "GlobalShadows": true,
+        "Technology": "ShadowMap"
+      }
+    },
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+# Built place files
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+
+# Generated tooling files
+sourcemap.json
+roblox.yml
+.cache/
+.test.project.json

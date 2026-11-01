@@ -1,0 +1,135 @@
+{
+  "className": "Model",
+  "children": [
+    {
+      "name": "Floor",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0.86, 0.84, 0.8],
+        "Material": "SmoothPlastic",
+        "Size": [64, 2, 64],
+        "CFrame": {
+          "CFrame": {
+            "position": [0, -1, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "WallNorth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0.2, 0.25, 0.4],
+        "Material": "SmoothPlastic",
+        "Size": [68, 24, 2],
+        "CFrame": {
+          "CFrame": {
+            "position": [0, 10, -33],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "WallSouth",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0.2, 0.25, 0.4],
+        "Material": "SmoothPlastic",
+        "Size": [68, 24, 2],
+        "CFrame": {
+          "CFrame": {
+            "position": [0, 10, 33],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "WallEast",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0.2, 0.25, 0.4],
+        "Material": "SmoothPlastic",
+        "Size": [2, 24, 64],
+        "CFrame": {
+          "CFrame": {
+            "position": [33, 10, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "WallWest",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0.2, 0.25, 0.4],
+        "Material": "SmoothPlastic",
+        "Size": [2, 24, 64],
+        "CFrame": {
+          "CFrame": {
+            "position": [-33, 10, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "SpawnA",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "CanTouch": false,
+        "Size": [6, 1, 6],
+        "Transparency": 1,
+        "CFrame": {
+          "CFrame": {
+            "position": [-24, 0.5, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "SpawnB",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "CanCollide": false,
+        "CanTouch": false,
+        "Size": [6, 1, 6],
+        "Transparency": 1,
+        "CFrame": {
+          "CFrame": {
+            "position": [24, 0.5, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    },
+    {
+      "name": "Cube",
+      "className": "Part",
+      "properties": {
+        "Anchored": true,
+        "Color": [0, 0, 0],
+        "Material": "SmoothPlastic",
+        "Size": [5, 5, 5],
+        "CFrame": {
+          "CFrame": {
+            "position": [0, 2.5, 0],
+            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+          }
+        }
+      }
+    }
+  ]
+}
