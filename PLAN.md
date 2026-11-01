@@ -22,10 +22,10 @@ Not now: real combat, powers, DNA, other worlds, monster models. The friends dec
 
 Each one ends with something you can open and try.
 
-- [ ] **M1 - Hub and invites.** Flat hub, hover and click a player, top invite window,
+- [x] **M1 - Hub and invites.** Flat hub, hover and click a player, top invite window,
       popup with accept/decline, timeout, cooldown, all checks on the server.
       Try it: Studio > Test > Clients and Servers > 2 Players.
-- [ ] **M2 - Full duel loop.** Room pool, teleport, form swap, black cube, Wins on the
+- [x] **M2 - Full duel loop.** Room pool, teleport, form swap, black cube, Wins on the
       scoreboard, return to hub, room released. Handles leaving and resetting mid-duel.
       Try it: same 2-player test. This finishes the friends' task list.
 - [ ] **M3 - Go live (needs Niv).** Publish as private, invite friends, test on real
@@ -41,6 +41,7 @@ Each one ends with something you can open and try.
 - Clicking uses a client raycast, not ClickDetectors, so it keeps working on any model.
 - Everything is checked on the server. The client only asks.
 - Logic with no Roblox calls lives in pure modules, so Lune can test it from the terminal.
+- Only touching the cube gives a point. Dying, leaving and time running out end the duel with no point.
 - Forms are full character swaps (`player.Character = model`), the same path a friend's
   rigged monster will use. Placeholders are recoloured default rigs.
 
@@ -48,5 +49,8 @@ Each one ends with something you can open and try.
 
 Update this section whenever work stops, so a fresh session can continue.
 
-- Scope for the overnight run: M1 and M2. Stop before M3.
-- Status: project setup in progress.
+- M1 and M2 are done and verified on 2026-11-02: 11 unit tests, 56 checks in the two-player
+  Studio test, screenshots reviewed. Next is M3, which needs Niv.
+- Not covered by the automated test: a real mouse click and the hover highlight (the test calls
+  the raycast directly), and anything on real Roblox servers.
+- Rules from the owner: no combat, powers, DNA or monster models until the friends decide.

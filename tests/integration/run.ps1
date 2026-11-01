@@ -32,6 +32,23 @@ Get-Process RobloxStudioBeta, RobloxCrashHandler -ErrorAction SilentlyContinue |
     Where-Object { $_.StartTime -gt $started.AddSeconds(-2) } |
     Stop-Process -Force -Confirm:$false
 
+# The test clients' screenshots land in Roblox's capture folder, named by client and order
+$shotNames = 'hub', 'invite_window', 'invite_popup', 'countdown', 'live', 'result', 'back_in_hub'
+$shots = "$root\.cache\shots"
+Remove-Item $shots -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force $shots | Out-Null
+$clients = @{}
+Get-ChildItem "$env:LOCALAPPDATA\Roblox\tmp-capture-storage" -File |
+    Where-Object { $_.LastWriteTime -gt $started } |
+    Sort-Object Name | ForEach-Object {
+        if ($_.Name -match '^wob-(\d+)(\d{7})$') {
+            $client = $Matches[1]
+            $index = [int]$Matches[2]
+            if (-not $clients.ContainsKey($client)) { $clients[$client] = $clients.Count + 1 }
+            Copy-Item $_.FullName "$shots\$($shotNames[$index])_client$($clients[$client]).png"
+        }
+    }
+
 if (-not $finished) {
     Write-Output "TIMED OUT after $TimeoutSeconds seconds"
     exit 1

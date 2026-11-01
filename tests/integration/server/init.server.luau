@@ -41,10 +41,12 @@ end
 local testPlayers: { Player } = {}
 
 local function shot(name: string)
-	print(`[TEST] SHOT {name}`)
-	for index, player in testPlayers do
-		print(`[TEST] SHOT result {name} player{index}: {ask(player, "capture", `{name}_player{index}`)}`)
+	task.wait(0.3)
+	for _, player in testPlayers do
+		task.spawn(ask, player, "capture")
 	end
+	print(`[TEST] SHOT {name}`)
+	task.wait(1)
 end
 
 local function wins(player: Player): number
@@ -161,7 +163,9 @@ local function main()
 	check("camera follows the new form", status.cameraOnHumanoid)
 	check("client sees the new character", status.character == a.Name)
 	check("form has an Animate script", status.hasAnimate)
-	check("countdown text is showing", status.big ~= "", status.big)
+	check("countdown text is showing", waitUntil(function()
+		return ask(a, "big") ~= ""
+	end, 1), ask(a, "big"))
 	shot("countdown")
 
 	check("cube goes live after the countdown", waitLive(a, b))

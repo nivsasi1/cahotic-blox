@@ -79,6 +79,11 @@
         "Technology": "ShadowMap"
       }
     },
+    "TextChatService": {
+      "$properties": {
+        "ChatVersion": "TextChatService"
+      }
+    },
     "SoundService": {
       "$properties": {
         "RespectFilteringEnabled": true

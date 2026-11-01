@@ -91,12 +91,27 @@ function Ui.avatar(props: { [string]: any }): ImageLabel
 	end
 	return Ui.make("ImageLabel", defaults, {
 		Ui.make("UICorner", { CornerRadius = UDim.new(1, 0) }),
+		Ui.label({
+			Name = "Initial",
+			Size = UDim2.fromScale(1, 1),
+			TextSize = 28,
+			TextTruncate = Enum.TextTruncate.None,
+			TextXAlignment = Enum.TextXAlignment.Center,
+		}),
 	})
 end
 
--- Studio test players have made-up ids with no picture, so this can fail
+-- Shows the first letter until the photo loads. Studio test players never have a photo,
+-- their ids are made up.
 function Ui.setAvatar(image: ImageLabel, player: Player)
+	local initial = image:FindFirstChild("Initial") :: TextLabel
+	initial.Text = string.upper(string.sub(player.DisplayName, 1, 1))
+	initial.Visible = true
 	image.Image = ""
+	if player.UserId <= 0 then
+		return
+	end
+
 	task.spawn(function()
 		local ok, content = pcall(function()
 			return Players:GetUserThumbnailAsync(
@@ -107,6 +122,7 @@ function Ui.setAvatar(image: ImageLabel, player: Player)
 		end)
 		if ok then
 			image.Image = content
+			initial.Visible = false
 		end
 	end)
 end

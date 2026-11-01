@@ -109,13 +109,18 @@ function commands.status()
 	}
 end
 
-function commands.capture(name: string)
-	local ok, result = pcall(function()
-		return game:GetService("TestService"):CaptureScreenshotAsync(name)
+-- The file lands in Roblox's capture folder, run.ps1 collects it after the test
+function commands.capture()
+	local done = false
+	game:GetService("CaptureService"):CaptureScreenshot(function()
+		done = true
 	end)
-	return `{ok} {result}`
+	local deadline = os.clock() + 6
+	while not done and os.clock() < deadline do
+		task.wait(0.05)
+	end
+	return done
 end
-
 function commands.canMove()
 	local character = localPlayer.Character :: Model
 	local humanoid = character:FindFirstChildOfClass("Humanoid") :: Humanoid

@@ -84,6 +84,17 @@ local function pop(text: string, color: Color3?)
 	Ui.tween(big, 0.25, { Rotation = 0 }, Enum.EasingStyle.Back)
 end
 
+-- Players land facing the cube, but the camera still points wherever it did in the hub
+local function lookWhereFacing()
+	local character = localPlayer.Character
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	local camera = workspace.CurrentCamera
+	if root and root:IsA("BasePart") and camera then
+		local forward = root.CFrame.LookVector
+		camera.CFrame = CFrame.lookAt(root.Position - forward * 16 + Vector3.yAxis * 7, root.Position + forward * 12)
+	end
+end
+
 function DuelHud.isActive(): boolean
 	return active
 end
@@ -115,6 +126,8 @@ function DuelHud.onState(payload: { [string]: any })
 		goal.Visible = true
 		Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = 1 })
 		task.spawn(function()
+			task.wait() -- the camera needs a frame to pick up the new body
+			lookWhereFacing()
 			for remaining = payload.seconds, 1, -1 do
 				if mine ~= step then
 					return
