@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Characters = require(ReplicatedStorage.Shared.Characters)
 local Config = require(ReplicatedStorage.Shared.Config)
 local DuelService = require(script.Parent.Parent.Duels.DuelService)
 local InviteBook = require(script.Parent.InviteBook)
@@ -28,15 +29,11 @@ local function reject(player: Player, reason: string?)
 	tell(player, { kind = "rejected", reason = reason })
 end
 
-local function rootPosition(player: Player): Vector3?
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	return if root and root:IsA("BasePart") then root.Position else nil
-end
-
 local function inRange(first: Player, second: Player): boolean
-	local a, b = rootPosition(first), rootPosition(second)
-	return a ~= nil and b ~= nil and (a - b).Magnitude <= Config.INVITE_RANGE + Config.INVITE_RANGE_SLACK
+	local a, b = Characters.rootPart(first), Characters.rootPart(second)
+	return a ~= nil
+		and b ~= nil
+		and (a.Position - b.Position).Magnitude <= Config.INVITE_RANGE + Config.INVITE_RANGE_SLACK
 end
 
 local function onSend(player: Player, target: any)

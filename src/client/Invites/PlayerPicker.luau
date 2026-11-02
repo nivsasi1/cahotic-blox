@@ -6,10 +6,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
+local Characters = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Characters"))
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
 local Toast = require(script.Parent.Parent.Common.Toast)
 local Ui = require(script.Parent.Parent.Common.Ui)
-local playerFromPart = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("PlayerFromPart"))
 
 local localPlayer = Players.LocalPlayer
 local mouse = localPlayer:GetMouse()
@@ -28,15 +28,9 @@ local PlayerPicker = {}
 
 local hovered: Player? = nil
 
-local function rootPosition(player: Player): Vector3?
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	return if root and root:IsA("BasePart") then root.Position else nil
-end
-
 function PlayerPicker.inRange(player: Player): boolean
-	local mine, theirs = rootPosition(localPlayer), rootPosition(player)
-	return mine ~= nil and theirs ~= nil and (mine - theirs).Magnitude <= Config.INVITE_RANGE
+	local mine, theirs = Characters.rootPart(localPlayer), Characters.rootPart(player)
+	return mine ~= nil and theirs ~= nil and (mine.Position - theirs.Position).Magnitude <= Config.INVITE_RANGE
 end
 
 function PlayerPicker.playerOnRay(ray: Ray): Player?
@@ -45,7 +39,7 @@ function PlayerPicker.playerOnRay(ray: Ray): Player?
 	params.FilterDescendantsInstances = { localPlayer.Character :: any }
 
 	local hit = workspace:Raycast(ray.Origin, ray.Direction * 500, params)
-	return hit and playerFromPart(hit.Instance)
+	return hit and Characters.playerFromPart(hit.Instance)
 end
 
 local function setHovered(player: Player?)

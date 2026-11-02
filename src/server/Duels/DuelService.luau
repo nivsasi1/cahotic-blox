@@ -3,11 +3,11 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Arenas = require(script.Parent.Arenas)
+local Characters = require(ReplicatedStorage.Shared.Characters)
 local Config = require(ReplicatedStorage.Shared.Config)
 local FormService = require(script.Parent.Parent.Forms.FormService)
 local RoomPool = require(script.Parent.RoomPool)
 local ScoreService = require(script.Parent.Parent.Score.ScoreService)
-local playerFromPart = require(ReplicatedStorage.Shared.PlayerFromPart)
 
 local DuelState = ReplicatedStorage.Remotes.DuelState
 
@@ -47,9 +47,8 @@ end
 
 -- Anchoring holds any rig still, so this needs no per-form walk speed
 local function setFrozen(player: Player, frozen: boolean)
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	if root and root:IsA("BasePart") then
+	local root = Characters.rootPart(player)
+	if root then
 		root.Anchored = frozen
 		if not frozen then
 			root:SetNetworkOwner(player)
@@ -118,7 +117,7 @@ local function goLive(duel: Duel)
 	table.insert(
 		duel.connections,
 		Arenas.cube(duel.room).Touched:Connect(function(part)
-			local player = playerFromPart(part)
+			local player = Characters.playerFromPart(part)
 			if player and duelOf[player] == duel and duel.phase == "live" then
 				finish(duel, player, "cube")
 			end
