@@ -7,8 +7,8 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
-local Toast = require(script.Parent.Toast)
-local Ui = require(script.Parent.Ui)
+local Toast = require(script.Parent.Parent.Common.Toast)
+local Ui = require(script.Parent.Parent.Common.Ui)
 local playerFromPart = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("PlayerFromPart"))
 
 local localPlayer = Players.LocalPlayer

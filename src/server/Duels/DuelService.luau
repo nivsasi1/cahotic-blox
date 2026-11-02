@@ -4,9 +4,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Arenas = require(script.Parent.Arenas)
 local Config = require(ReplicatedStorage.Shared.Config)
-local FormService = require(script.Parent.FormService)
+local FormService = require(script.Parent.Parent.Forms.FormService)
 local RoomPool = require(script.Parent.RoomPool)
-local ScoreService = require(script.Parent.ScoreService)
+local ScoreService = require(script.Parent.Parent.Score.ScoreService)
 local playerFromPart = require(ReplicatedStorage.Shared.PlayerFromPart)
 
 local DuelState = ReplicatedStorage.Remotes.DuelState

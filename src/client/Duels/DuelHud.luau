@@ -5,7 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
-local Ui = require(script.Parent.Ui)
+local Ui = require(script.Parent.Parent.Common.Ui)
 
 local localPlayer = Players.LocalPlayer
 

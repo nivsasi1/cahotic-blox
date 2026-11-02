@@ -6,7 +6,7 @@ local ServerScriptService = game:GetService("ServerScriptService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
-local DuelService = require(ServerScriptService:WaitForChild("Server"):WaitForChild("DuelService"))
+local DuelService = require(ServerScriptService:WaitForChild("Server"):WaitForChild("Duels"):WaitForChild("DuelService"))
 
 local bus = Instance.new("RemoteFunction")
 bus.Name = "TestBus"

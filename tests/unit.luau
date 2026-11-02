@@ -1,8 +1,8 @@
 -- Run with: lune run tests/unit
 local process = require("@lune/process")
 
-local InviteBook = require("../src/server/InviteBook")
-local RoomPool = require("../src/server/RoomPool")
+local InviteBook = require("../src/server/Invites/InviteBook")
+local RoomPool = require("../src/server/Duels/RoomPool")
 
 local passed, failed = 0, 0
 

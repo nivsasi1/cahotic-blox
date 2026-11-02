@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.Config)
-local DuelService = require(script.Parent.DuelService)
+local DuelService = require(script.Parent.Parent.Duels.DuelService)
 local InviteBook = require(script.Parent.InviteBook)
 
 local remotes = ReplicatedStorage.Remotes

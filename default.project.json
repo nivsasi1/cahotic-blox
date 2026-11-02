@@ -22,7 +22,7 @@
     },
     "ServerStorage": {
       "ArenaTemplate": {
-        "$path": "src/arena/ArenaTemplate.model.json"
+        "$path": "assets/arenas/ArenaTemplate.model.json"
       },
       "Forms": {
         "$path": "assets/forms"

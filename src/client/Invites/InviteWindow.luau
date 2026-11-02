@@ -3,8 +3,8 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
-local Toast = require(script.Parent.Toast)
-local Ui = require(script.Parent.Ui)
+local Toast = require(script.Parent.Parent.Common.Toast)
+local Ui = require(script.Parent.Parent.Common.Ui)
 
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 

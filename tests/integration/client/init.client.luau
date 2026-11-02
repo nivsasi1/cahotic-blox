@@ -5,11 +5,11 @@ local RunService = game:GetService("RunService")
 
 local localPlayer = Players.LocalPlayer
 local playerGui = localPlayer:WaitForChild("PlayerGui")
-local client = script.Parent:WaitForChild("Client")
+local invites = script.Parent:WaitForChild("Client"):WaitForChild("Invites")
 
-local InvitePopup = require(client:WaitForChild("InvitePopup"))
-local InviteWindow = require(client:WaitForChild("InviteWindow"))
-local PlayerPicker = require(client:WaitForChild("PlayerPicker"))
+local InvitePopup = require(invites:WaitForChild("InvitePopup"))
+local InviteWindow = require(invites:WaitForChild("InviteWindow"))
+local PlayerPicker = require(invites:WaitForChild("PlayerPicker"))
 
 local bus = ReplicatedStorage:WaitForChild("TestBus") :: RemoteFunction
 

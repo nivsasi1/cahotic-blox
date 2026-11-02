@@ -2,11 +2,11 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local DuelHud = require(script.DuelHud)
-local InvitePopup = require(script.InvitePopup)
-local InviteWindow = require(script.InviteWindow)
-local PlayerPicker = require(script.PlayerPicker)
-local Ui = require(script.Ui)
+local DuelHud = require(script.Duels.DuelHud)
+local InvitePopup = require(script.Invites.InvitePopup)
+local InviteWindow = require(script.Invites.InviteWindow)
+local PlayerPicker = require(script.Invites.PlayerPicker)
+local Ui = require(script.Common.Ui)
 
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 
