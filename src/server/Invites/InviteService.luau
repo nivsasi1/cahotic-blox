@@ -68,6 +68,17 @@ local function onCancel(player: Player)
 	end
 end
 
+local function startDuel(invite: InviteBook.Invite, player: Player)
+	local from = Players:GetPlayerByUserId(invite.from)
+	if from then
+		local started, reason = DuelService.start(from, player)
+		if not started then
+			reject(from, reason)
+			reject(player, reason)
+		end
+	end
+end
+
 local function onAnswer(player: Player, accept: any)
 	if typeof(accept) ~= "boolean" then
 		return
@@ -76,19 +87,12 @@ local function onAnswer(player: Player, accept: any)
 	if not invite then
 		return
 	end
-	if not accept then
-		closeInvite(invite, "declined")
-		return
-	end
 
-	closeInvite(invite, "accepted")
-	local from = Players:GetPlayerByUserId(invite.from)
-	if from then
-		local started, reason = DuelService.start(from, player)
-		if not started then
-			reject(from, reason)
-			reject(player, reason)
-		end
+	if accept then
+		closeInvite(invite, "accepted")
+		startDuel(invite, player)
+	else
+		closeInvite(invite, "declined")
 	end
 end
 

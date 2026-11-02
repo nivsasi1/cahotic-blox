@@ -5,9 +5,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
 
 local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"))
+local DuelCamera = require(script.Parent.DuelCamera)
 local Ui = require(script.Parent.Parent.Common.Ui)
 
 local localPlayer = Players.LocalPlayer
+
+type Payload = { [string]: any }
 
 local gui = Ui.screen("DuelHud", 10)
 gui.IgnoreGuiInset = true
@@ -84,22 +87,15 @@ local function pop(text: string, color: Color3?)
 	Ui.tween(big, 0.25, { Rotation = 0 }, Enum.EasingStyle.Back)
 end
 
--- Players land facing the cube, but the camera still points wherever it did in the hub
-local function lookWhereFacing()
-	local character = localPlayer.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	local camera = workspace.CurrentCamera
-	if root and root:IsA("BasePart") and camera then
-		local forward = root.CFrame.LookVector
-		camera.CFrame = CFrame.lookAt(root.Position - forward * 16 + Vector3.yAxis * 7, root.Position + forward * 12)
-	end
+local function fadeTo(transparency: number)
+	Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = transparency })
 end
 
 function DuelHud.isActive(): boolean
 	return active
 end
 
-local function resultText(payload: { [string]: any }): (string, Color3, string)
+local function resultText(payload: Payload): (string, Color3, string)
 	if payload.winner == localPlayer then
 		return "YOU WIN", Ui.colors.accent, "+1 win"
 	elseif payload.winner then
@@ -112,61 +108,74 @@ local function resultText(payload: { [string]: any }): (string, Color3, string)
 	return "DUEL OVER", Ui.colors.text, "The duel was cancelled"
 end
 
-function DuelHud.onState(payload: { [string]: any })
-	step += 1
-	local mine = step
+-- One function per phase the server sends. `mine` is the step this phase started on.
+local phases: { [string]: (payload: Payload, mine: number) -> () } = {}
 
-	if payload.phase == "starting" then
-		active = true
-		setResetAllowed(false)
-		Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = 0 })
-	elseif payload.phase == "countdown" then
-		goalText.Text = `You are {payload.form or "yourself"}`
-		goalSub.Text = `vs {payload.opponent.DisplayName}`
-		goal.Visible = true
-		Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = 1 })
-		task.spawn(function()
-			task.wait() -- the camera needs a frame to pick up the new body
-			lookWhereFacing()
-			for remaining = payload.seconds, 1, -1 do
-				if mine ~= step then
-					return
-				end
-				pop(tostring(remaining))
-				task.wait(1)
+function phases.starting()
+	active = true
+	setResetAllowed(false)
+	fadeTo(0)
+end
+
+function phases.countdown(payload: Payload, mine: number)
+	goalText.Text = `You are {payload.form or "yourself"}`
+	goalSub.Text = `vs {payload.opponent.DisplayName}`
+	goal.Visible = true
+	fadeTo(1)
+	task.spawn(function()
+		task.wait() -- the camera needs a frame to pick up the new body
+		DuelCamera.lookWhereFacing()
+		for remaining = payload.seconds, 1, -1 do
+			if mine ~= step then
+				return
 			end
-		end)
-	elseif payload.phase == "live" then
-		pop("GO!", Ui.colors.accent)
-		goalText.Text = "Touch the black cube first!"
-		task.delay(0.8, function()
-			if mine == step then
-				big.Text = ""
+			pop(tostring(remaining))
+			task.wait(1)
+		end
+	end)
+end
+
+function phases.live(payload: Payload, mine: number)
+	pop("GO!", Ui.colors.accent)
+	goalText.Text = "Touch the black cube first!"
+	task.delay(0.8, function()
+		if mine == step then
+			big.Text = ""
+		end
+	end)
+	task.spawn(function()
+		for remaining = payload.seconds, 0, -1 do
+			if mine ~= step then
+				return
 			end
-		end)
-		task.spawn(function()
-			for remaining = payload.seconds, 0, -1 do
-				if mine ~= step then
-					return
-				end
-				goalSub.Text = `{remaining}s left`
-				task.wait(1)
-			end
-		end)
-	elseif payload.phase == "result" then
-		local text, color, detail = resultText(payload)
-		pop(text, color)
-		goalText.Text = "Back to the hub soon"
-		goalSub.Text = detail
-	elseif payload.phase == "returning" then
-		Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = 0 })
-	elseif payload.phase == "ended" then
-		active = false
-		big.Text = ""
-		goal.Visible = false
-		setResetAllowed(true)
-		Ui.tween(fade, Config.FADE_TIME, { BackgroundTransparency = 1 })
-	end
+			goalSub.Text = `{remaining}s left`
+			task.wait(1)
+		end
+	end)
+end
+
+function phases.result(payload: Payload)
+	local text, color, detail = resultText(payload)
+	pop(text, color)
+	goalText.Text = "Back to the hub soon"
+	goalSub.Text = detail
+end
+
+function phases.returning()
+	fadeTo(0)
+end
+
+function phases.ended()
+	active = false
+	big.Text = ""
+	goal.Visible = false
+	setResetAllowed(true)
+	fadeTo(1)
+end
+
+function DuelHud.onState(payload: Payload)
+	step += 1
+	phases[payload.phase](payload, step)
 end
 
 return DuelHud

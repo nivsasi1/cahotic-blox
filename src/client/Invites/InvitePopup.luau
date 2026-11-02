@@ -56,14 +56,7 @@ local decline = Ui.button({
 	TextColor3 = Ui.colors.text,
 	Parent = panel,
 })
-local timer = Ui.make("Frame", {
-	Name = "Timer",
-	BackgroundColor3 = Ui.colors.accent,
-	BorderSizePixel = 0,
-	Position = UDim2.new(0, 14, 1, -7),
-	Size = UDim2.new(1, -28, 0, 3),
-	Parent = panel,
-})
+local timer = Ui.timerBar(panel)
 
 local InvitePopup = {}
 
@@ -99,10 +92,9 @@ function InvitePopup.onState(payload: { [string]: any })
 		open = true
 		Ui.setAvatar(avatar, payload.from)
 		title.Text = payload.from.DisplayName
-		timer.Size = UDim2.new(1, -28, 0, 3)
 		panel.Visible = true
 		Ui.tween(panel, 0.35, { Position = SHOWN }, Enum.EasingStyle.Back)
-		timerTween = Ui.tween(timer, Config.INVITE_TIMEOUT, { Size = UDim2.fromOffset(0, 3) }, Enum.EasingStyle.Linear)
+		timerTween = Ui.drainTimer(timer, Config.INVITE_TIMEOUT)
 	elseif payload.kind == "closed" and open then
 		hide()
 		Toast.show(payload.reason)

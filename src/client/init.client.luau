@@ -1,12 +1,12 @@
 --!strict
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local DuelCamera = require(script.Duels.DuelCamera)
 local DuelHud = require(script.Duels.DuelHud)
+local HubHint = require(script.Hub.HubHint)
 local InvitePopup = require(script.Invites.InvitePopup)
 local InviteWindow = require(script.Invites.InviteWindow)
 local PlayerPicker = require(script.Invites.PlayerPicker)
-local Ui = require(script.Common.Ui)
 
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 
@@ -21,30 +21,5 @@ local function canPick(): boolean
 end
 
 PlayerPicker.start(canPick, InviteWindow.open)
-
--- The camera keeps following the old body after a form swap unless we point it at the new one
-Players.LocalPlayer.CharacterAdded:Connect(function(character)
-	local humanoid = character:WaitForChild("Humanoid", 5)
-	local camera = workspace.CurrentCamera
-	if humanoid and camera then
-		camera.CameraSubject = humanoid
-	end
-end)
-
-local hint = Ui.label({
-	Name = "Hint",
-	AnchorPoint = Vector2.new(0.5, 1),
-	BackgroundTransparency = 1,
-	Font = Enum.Font.GothamMedium,
-	Position = UDim2.new(0.5, 0, 1, -12),
-	Size = UDim2.fromOffset(360, 24),
-	Text = "Walk up to a player and click them to duel",
-	TextSize = 15,
-	TextStrokeTransparency = 0.5,
-	TextXAlignment = Enum.TextXAlignment.Center,
-	Parent = Ui.screen("HubHint", 1),
-})
-
-game:GetService("RunService").Heartbeat:Connect(function()
-	hint.Visible = not DuelHud.isActive() and #Players:GetPlayers() > 1
-end)
+DuelCamera.start()
+HubHint.start(DuelHud.isActive)

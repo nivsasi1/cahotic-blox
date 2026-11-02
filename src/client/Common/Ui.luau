@@ -2,6 +2,8 @@
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
+local FULL_TIMER = UDim2.new(1, -28, 0, 3)
+
 local Ui = {}
 
 Ui.colors = {
@@ -138,6 +140,23 @@ function Ui.tween(
 	local tween = TweenService:Create(instance, info, goal)
 	tween:Play()
 	return tween
+end
+
+-- The thin bar along the bottom of a panel that shows how long is left to answer
+function Ui.timerBar(parent: Instance): Frame
+	return Ui.make("Frame", {
+		Name = "Timer",
+		BackgroundColor3 = Ui.colors.accent,
+		BorderSizePixel = 0,
+		Position = UDim2.new(0, 14, 1, -7),
+		Size = FULL_TIMER,
+		Parent = parent,
+	})
+end
+
+function Ui.drainTimer(bar: Frame, seconds: number): Tween
+	bar.Size = FULL_TIMER
+	return Ui.tween(bar, seconds, { Size = UDim2.fromOffset(0, 3) }, Enum.EasingStyle.Linear)
 end
 
 return Ui

@@ -60,15 +60,8 @@ local closeButton = Ui.button({
 	TextSize = 14,
 	Parent = panel,
 })
-local timer = Ui.make("Frame", {
-	Name = "Timer",
-	BackgroundColor3 = Ui.colors.accent,
-	BorderSizePixel = 0,
-	Position = UDim2.new(0, 14, 1, -7),
-	Size = UDim2.new(1, -28, 0, 3),
-	Visible = false,
-	Parent = panel,
-})
+local timer = Ui.timerBar(panel)
+timer.Visible = false
 
 local InviteWindow = {}
 
@@ -140,17 +133,20 @@ function InviteWindow.submit()
 	end
 end
 
+local function showWaiting(player: Player)
+	state = "waiting"
+	title.Text = `Waiting for {player.DisplayName}`
+	subtitle.Text = "They have a moment to answer"
+	action.Text = "Cancel"
+	action.BackgroundColor3 = Ui.colors.danger
+	action.TextColor3 = Ui.colors.text
+	timer.Visible = true
+	timerTween = Ui.drainTimer(timer, Config.INVITE_TIMEOUT)
+end
+
 function InviteWindow.onState(payload: { [string]: any })
 	if payload.kind == "sent" and state == "sending" and target then
-		state = "waiting"
-		title.Text = `Waiting for {target.DisplayName}`
-		subtitle.Text = "They have a moment to answer"
-		action.Text = "Cancel"
-		action.BackgroundColor3 = Ui.colors.danger
-		action.TextColor3 = Ui.colors.text
-		timer.Size = UDim2.new(1, -28, 0, 3)
-		timer.Visible = true
-		timerTween = Ui.tween(timer, Config.INVITE_TIMEOUT, { Size = UDim2.fromOffset(0, 3) }, Enum.EasingStyle.Linear)
+		showWaiting(target)
 	elseif payload.kind == "rejected" then
 		if state == "sending" then
 			hide()

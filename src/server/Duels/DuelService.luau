@@ -56,12 +56,7 @@ local function setFrozen(player: Player, frozen: boolean)
 	end
 end
 
-local function finish(duel: Duel, winner: Player?, reason: string)
-	if duel.phase == "ending" then
-		return
-	end
-	duel.phase = "ending"
-
+local function showResult(duel: Duel, winner: Player?, reason: string)
 	for _, connection in duel.connections do
 		connection:Disconnect()
 	end
@@ -75,12 +70,14 @@ local function finish(duel: Duel, winner: Player?, reason: string)
 	end
 	tell(duel, { phase = "result", winner = winner, reason = reason })
 	task.wait(Config.RESULT_TIME)
+end
 
+-- Reloading gives back the player's own avatar on the hub spawn.
+-- The pcall matters: a failure here must never leave a room reserved forever.
+local function sendHome(duel: Duel)
 	tell(duel, { phase = "returning" })
 	task.wait(Config.FADE_TIME)
 
-	-- Reloading gives back the player's own avatar on the hub spawn.
-	-- The pcall matters: a failure here must never leave a room reserved forever.
 	for _, player in duel.players do
 		if isHere(player) then
 			local ok, err = pcall(player.LoadCharacterAsync, player)
@@ -89,6 +86,9 @@ local function finish(duel: Duel, winner: Player?, reason: string)
 			end
 		end
 	end
+end
+
+local function closeDuel(duel: Duel, reason: string)
 	pool:release(duel.room)
 	for _, player in duel.players do
 		duelOf[player] = nil
@@ -96,6 +96,17 @@ local function finish(duel: Duel, winner: Player?, reason: string)
 
 	tell(duel, { phase = "ended" })
 	print(`[Duel] room {duel.room} released ({reason}), {pool:freeCount()} free`)
+end
+
+local function finish(duel: Duel, winner: Player?, reason: string)
+	if duel.phase == "ending" then
+		return
+	end
+	duel.phase = "ending"
+
+	showResult(duel, winner, reason)
+	sendHome(duel)
+	closeDuel(duel, reason)
 end
 
 local function watchForDeath(duel: Duel, player: Player)
@@ -136,16 +147,9 @@ local function goLive(duel: Duel)
 	end)
 end
 
-local function run(duel: Duel)
+local function placePlayers(duel: Duel, formFirst: string?, formSecond: string?)
 	local first, second = duel.players[1], duel.players[2]
-	local formFirst, formSecond = FormService.pickPair()
 	local spawnFirst, spawnSecond = Arenas.spawnFrames(duel.room)
-
-	tell(duel, { phase = "starting" })
-	task.wait(Config.FADE_TIME)
-	if duel.phase ~= "starting" then
-		return
-	end
 
 	FormService.apply(first, formFirst, spawnFirst)
 	FormService.apply(second, formSecond, spawnSecond)
@@ -153,10 +157,27 @@ local function run(duel: Duel)
 		setFrozen(player, true)
 		watchForDeath(duel, player)
 	end
+end
+
+local function countDown(duel: Duel, formFirst: string?, formSecond: string?)
+	local first, second = duel.players[1], duel.players[2]
 
 	DuelState:FireClient(first, { phase = "countdown", seconds = Config.COUNTDOWN, opponent = second, form = formFirst })
 	DuelState:FireClient(second, { phase = "countdown", seconds = Config.COUNTDOWN, opponent = first, form = formSecond })
 	task.wait(Config.COUNTDOWN)
+end
+
+local function run(duel: Duel)
+	local formFirst, formSecond = FormService.pickPair()
+
+	tell(duel, { phase = "starting" })
+	task.wait(Config.FADE_TIME)
+	if duel.phase ~= "starting" then
+		return
+	end
+
+	placePlayers(duel, formFirst, formSecond)
+	countDown(duel, formFirst, formSecond)
 	if duel.phase == "starting" then
 		goLive(duel)
 	end
