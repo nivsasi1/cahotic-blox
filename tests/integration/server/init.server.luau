@@ -102,7 +102,7 @@ local function backToHub(from: Player, to: Player)
 	task.wait(1)
 end
 
-local function main()
+local function waitForPlayers(): (Player, Player)
 	assert(waitUntil(function()
 		return #Players:GetPlayers() >= 2
 	end, 90), "second player never joined")
@@ -122,8 +122,10 @@ local function main()
 	end, 20), #ServerStorage.Forms:GetChildren())
 	task.wait(2)
 	shot("hub")
+	return a, b
+end
 
-	-- Clicking and invites
+local function testInvites(a: Player, b: Player)
 	local picked = ask(a, "pick", b)
 	check("clicking finds the other player", picked == b.Name, picked)
 
@@ -148,8 +150,9 @@ local function main()
 		return ask(a, "toast") == "Give them a moment before asking again"
 	end, 3))
 	task.wait(Config.INVITE_COOLDOWN + 0.5)
+end
 
-	-- Cube win
+local function testCubeWin(a: Player, b: Player)
 	local winsA, winsB = wins(a), wins(b)
 	startDuel(a, b)
 	local humanoid = (a.Character :: Model):FindFirstChildOfClass("Humanoid") :: Humanoid
@@ -185,17 +188,19 @@ local function main()
 	check("players got their own avatar back", (a.Character :: any).Humanoid.DisplayName == a.DisplayName)
 	check("controls still work after the duel", ask(a, "canMove"))
 	shot("back_in_hub")
+end
 
-	-- Dying cancels without a point
+local function testDying(a: Player, b: Player)
 	startDuel(b, a)
 	check("second duel goes live", waitLive(b, a))
-	winsA, winsB = wins(a), wins(b)
+	local winsA, winsB = wins(a), wins(b)
 	local victim = (b.Character :: Model):FindFirstChildOfClass("Humanoid") :: Humanoid
 	victim.Health = 0
 	backToHub(a, b)
 	check("dying gives nobody a point", wins(a) == winsA and wins(b) == winsB)
+end
 
-	-- Time running out
+local function testTimeout(a: Player, b: Player)
 	local config: any = Config
 	local originalTimeout = config.DUEL_TIMEOUT
 	config.DUEL_TIMEOUT = 2
@@ -206,11 +211,12 @@ local function main()
 	end, 5))
 	backToHub(a, b)
 	config.DUEL_TIMEOUT = originalTimeout
+end
 
-	-- Leaving mid-duel
+local function testLeaving(a: Player, b: Player)
 	startDuel(a, b)
 	check("fourth duel goes live", waitLive(a, b))
-	winsA = wins(a)
+	local winsA = wins(a)
 	b:Kick("integration test")
 	check("leaving ends the duel", waitUntil(function()
 		return ask(a, "big") == "DUEL OVER"
@@ -223,6 +229,15 @@ local function main()
 		return inHub(a)
 	end, 5))
 	check("leaving gives nobody a point", wins(a) == winsA)
+end
+
+local function main()
+	local a, b = waitForPlayers()
+	testInvites(a, b)
+	testCubeWin(a, b)
+	testDying(a, b)
+	testTimeout(a, b)
+	testLeaving(a, b)
 end
 
 local ok, err = xpcall(main, debug.traceback)

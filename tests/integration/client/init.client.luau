@@ -121,6 +121,7 @@ function commands.capture()
 	end
 	return done
 end
+
 function commands.canMove()
 	local character = localPlayer.Character :: Model
 	local humanoid = character:FindFirstChildOfClass("Humanoid") :: Humanoid
