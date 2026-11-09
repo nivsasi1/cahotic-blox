@@ -8,13 +8,8 @@
         "Anchored": true,
         "Color": [0.86, 0.84, 0.8],
         "Material": "SmoothPlastic",
-        "Size": [64, 2, 64],
-        "CFrame": {
-          "CFrame": {
-            "position": [0, -1, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "Size": [128, 2, 128],
+        "CFrame": { "CFrame": { "position": [0, -1, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     },
     {
@@ -24,13 +19,8 @@
         "Anchored": true,
         "Color": [0.2, 0.25, 0.4],
         "Material": "SmoothPlastic",
-        "Size": [68, 24, 2],
-        "CFrame": {
-          "CFrame": {
-            "position": [0, 10, -33],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "Size": [132, 24, 2],
+        "CFrame": { "CFrame": { "position": [0, 10, -65], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     },
     {
@@ -40,13 +30,8 @@
         "Anchored": true,
         "Color": [0.2, 0.25, 0.4],
         "Material": "SmoothPlastic",
-        "Size": [68, 24, 2],
-        "CFrame": {
-          "CFrame": {
-            "position": [0, 10, 33],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "Size": [132, 24, 2],
+        "CFrame": { "CFrame": { "position": [0, 10, 65], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     },
     {
@@ -56,13 +41,8 @@
         "Anchored": true,
         "Color": [0.2, 0.25, 0.4],
         "Material": "SmoothPlastic",
-        "Size": [2, 24, 64],
-        "CFrame": {
-          "CFrame": {
-            "position": [33, 10, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "Size": [2, 24, 128],
+        "CFrame": { "CFrame": { "position": [65, 10, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     },
     {
@@ -72,14 +52,257 @@
         "Anchored": true,
         "Color": [0.2, 0.25, 0.4],
         "Material": "SmoothPlastic",
-        "Size": [2, 24, 64],
-        "CFrame": {
-          "CFrame": {
-            "position": [-33, 10, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        "Size": [2, 24, 128],
+        "CFrame": { "CFrame": { "position": [-65, 10, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+      }
+    },
+    {
+      "name": "Cover",
+      "className": "Folder",
+      "children": [
+        {
+          "name": "HutWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.6, 0.45, 0.32],
+            "Material": "WoodPlanks",
+            "Size": [2, 10, 18],
+            "CFrame": { "CFrame": { "position": [-8, 5, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "HutEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.6, 0.45, 0.32],
+            "Material": "WoodPlanks",
+            "Size": [2, 10, 18],
+            "CFrame": { "CFrame": { "position": [8, 5, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "HutBack",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.6, 0.45, 0.32],
+            "Material": "WoodPlanks",
+            "Size": [14, 10, 2],
+            "CFrame": { "CFrame": { "position": [0, 5, -8], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "HutFrontLeft",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.6, 0.45, 0.32],
+            "Material": "WoodPlanks",
+            "Size": [4, 10, 2],
+            "CFrame": { "CFrame": { "position": [-5, 5, 8], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "HutFrontRight",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.6, 0.45, 0.32],
+            "Material": "WoodPlanks",
+            "Size": [4, 10, 2],
+            "CFrame": { "CFrame": { "position": [5, 5, 8], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "HutRoof",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.42, 0.3, 0.22],
+            "Material": "WoodPlanks",
+            "Size": [20, 1, 20],
+            "CFrame": { "CFrame": { "position": [0, 10.5, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "AlcoveNorth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.32, 0.38, 0.55],
+            "Material": "SmoothPlastic",
+            "Size": [30, 14, 2],
+            "CFrame": { "CFrame": { "position": [0, 7, -50], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "AlcoveSouth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.32, 0.38, 0.55],
+            "Material": "SmoothPlastic",
+            "Size": [30, 14, 2],
+            "CFrame": { "CFrame": { "position": [0, 7, 50], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateNorthWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [4, 6, 10],
+            "CFrame": { "CFrame": { "position": [-5, 3, -30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateNorthEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [4, 6, 10],
+            "CFrame": { "CFrame": { "position": [5, 3, -30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateSouthWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [4, 6, 10],
+            "CFrame": { "CFrame": { "position": [-5, 3, 30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateSouthEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [4, 6, 10],
+            "CFrame": { "CFrame": { "position": [5, 3, 30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateWestNorth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [6, 6, 6],
+            "CFrame": { "CFrame": { "position": [-34, 3, -18], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateWestSouth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [6, 6, 6],
+            "CFrame": { "CFrame": { "position": [-34, 3, 18], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateEastNorth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [6, 6, 6],
+            "CFrame": { "CFrame": { "position": [34, 3, -18], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "CrateEastSouth",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.7, 0.52, 0.3],
+            "Material": "WoodPlanks",
+            "Size": [6, 6, 6],
+            "CFrame": { "CFrame": { "position": [34, 3, 18], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "PillarNorthWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.28, 0.33, 0.5],
+            "Material": "SmoothPlastic",
+            "Size": [6, 16, 6],
+            "CFrame": { "CFrame": { "position": [-24, 8, -24], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "PillarNorthEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.28, 0.33, 0.5],
+            "Material": "SmoothPlastic",
+            "Size": [6, 16, 6],
+            "CFrame": { "CFrame": { "position": [24, 8, -24], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "PillarSouthWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.28, 0.33, 0.5],
+            "Material": "SmoothPlastic",
+            "Size": [6, 16, 6],
+            "CFrame": { "CFrame": { "position": [-24, 8, 24], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "PillarSouthEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.28, 0.33, 0.5],
+            "Material": "SmoothPlastic",
+            "Size": [6, 16, 6],
+            "CFrame": { "CFrame": { "position": [24, 8, 24], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "LowWallWest",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.45, 0.5, 0.62],
+            "Material": "Concrete",
+            "Size": [2, 4, 14],
+            "CFrame": { "CFrame": { "position": [-42, 2, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "LowWallEast",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "Color": [0.45, 0.5, 0.62],
+            "Material": "Concrete",
+            "Size": [2, 4, 14],
+            "CFrame": { "CFrame": { "position": [42, 2, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
           }
         }
-      }
+      ]
     },
     {
       "name": "SpawnA",
@@ -90,12 +313,7 @@
         "CanTouch": false,
         "Size": [6, 1, 6],
         "Transparency": 1,
-        "CFrame": {
-          "CFrame": {
-            "position": [-24, 0.5, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "CFrame": { "CFrame": { "position": [-56, 0.5, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     },
     {
@@ -107,13 +325,79 @@
         "CanTouch": false,
         "Size": [6, 1, 6],
         "Transparency": 1,
-        "CFrame": {
-          "CFrame": {
-            "position": [24, 0.5, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+        "CFrame": { "CFrame": { "position": [56, 0.5, 0], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+      }
+    },
+    {
+      "name": "CubeSpots",
+      "className": "Folder",
+      "children": [
+        {
+          "name": "Hut",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Size": [5, 5, 5],
+            "Transparency": 1,
+            "CFrame": { "CFrame": { "position": [0, 2.5, -3], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "NorthAlcove",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Size": [5, 5, 5],
+            "Transparency": 1,
+            "CFrame": { "CFrame": { "position": [0, 2.5, -57], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "SouthAlcove",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Size": [5, 5, 5],
+            "Transparency": 1,
+            "CFrame": { "CFrame": { "position": [0, 2.5, 57], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "NorthCrates",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Size": [5, 5, 5],
+            "Transparency": 1,
+            "CFrame": { "CFrame": { "position": [0, 2.5, -30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
+          }
+        },
+        {
+          "name": "SouthCrates",
+          "className": "Part",
+          "properties": {
+            "Anchored": true,
+            "CanCollide": false,
+            "CanQuery": false,
+            "CanTouch": false,
+            "Size": [5, 5, 5],
+            "Transparency": 1,
+            "CFrame": { "CFrame": { "position": [0, 2.5, 30], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
           }
         }
-      }
+      ]
     },
     {
       "name": "Cube",
@@ -123,12 +407,7 @@
         "Color": [0, 0, 0],
         "Material": "SmoothPlastic",
         "Size": [5, 5, 5],
-        "CFrame": {
-          "CFrame": {
-            "position": [0, 2.5, 0],
-            "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-          }
-        }
+        "CFrame": { "CFrame": { "position": [0, 2.5, -3], "orientation": [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } }
       }
     }
   ]
