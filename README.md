@@ -16,10 +16,24 @@ name, creatures and art before it goes public on Roblox.
 - Teleporting into a room and turning into a different form.
 - A 128 by 128 room with cover, where the black cube hides at a different spot each duel.
 - 90 seconds to find it first, with Wins on the scoreboard.
+- A toy blaster with health bars. A body shot takes 15% of health and a headshot 35%. At zero
+  you're knocked down for 5 seconds, then get up with 2 seconds of protection while health
+  refills. Knocking someone down buys you time to search. Only the cube wins.
 - Dying, leaving or running out of time ends the duel with no point.
 
-Combat, powers, DNA, other worlds and monster models are not in yet. Those come next, see
+Powers, DNA, other worlds and monster models are not in yet. Those come next, see
 [PLAN.md](PLAN.md).
+
+## Controls in a duel
+
+| Action | Computer | Phone |
+|---|---|---|
+| Move | WASD | thumbstick |
+| Aim | move the mouse, the camera sits over your right shoulder | drag the screen |
+| Fire | click, or hold to keep firing | hold the FIRE button |
+
+![A shot with its tracer](docs/screenshots/6-blaster.png)
+![Knocking the other player down](docs/screenshots/7-knockdown.png)
 
 ## First-time setup
 
@@ -107,8 +121,8 @@ every remote. The short version:
 | Folder | What's in it |
 |---|---|
 | `src/shared` | `Config.luau` with all the settings, and helpers used by both sides |
-| `src/server` | Game rules, by feature: `Duels`, `Forms`, `Invites`, `Score` |
-| `src/client` | What players see, by feature: `Duels`, `Hub`, `Invites`, plus `Common` UI parts |
+| `src/server` | Game rules, by feature: `Combat`, `Duels`, `Forms`, `Invites`, `Score` |
+| `src/client` | What players see, by feature: `Combat`, `Duels`, `Hub`, `Invites`, plus `Common` UI parts |
 | `assets/arenas` | The duel room |
 | `assets/forms` | Monster models, see the [guide](assets/forms/README.md) |
 | `tests` | Unit tests and the two-player test |
@@ -150,7 +164,8 @@ The full game, Windows only:
 ```
 
 This opens Studio with one server and two clients and plays a scripted match through invites,
-decline, cooldown, a cube win, dying, time running out and leaving. It prints every check, saves
+decline, cooldown, a cube win, a blaster fight with a knockdown, dying, time running out and
+leaving. It prints every check, saves
 screenshots to `.cache\shots`, and closes the Studio windows it opened. Studio must be signed in.
 
 The test calls the click logic directly, so try a real mouse click yourself after changing

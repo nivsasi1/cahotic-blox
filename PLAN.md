@@ -16,7 +16,11 @@ Only the flow around the duel, from the task list we got:
 6. The room has a black cube. First to touch it wins and gets a scoreboard point.
 7. Both teleport back to the hub and the room is released.
 
-Not now: real combat, powers, DNA, other worlds, monster models. The friends decide those.
+Added on 2026-11-09 from the friends' fighting engine task: server authority, HP, damage and
+hitboxes, with a simple toy gun and raycasts for now. Touching the cube still wins. Shooting only
+buys time.
+
+Not now: powers, DNA, other worlds, monster models, an input action system. The friends decide those.
 
 ## Milestones
 
@@ -30,6 +34,9 @@ Each one ends with something you can open and try.
       Try it: same 2-player test. This finishes the friends' task list.
 - [x] **Bigger room.** 128 by 128 room with a hut, alcoves, pillars, crates and low walls.
       The cube hides at one of 5 spots, never the same one twice in a row. 90 seconds a duel.
+- [x] **Toy blaster.** Health bars, 15% body and 35% head damage, 4 shots a second, knockdown
+      for 5 seconds, then 2 seconds of protection while health refills. Shoulder camera,
+      crosshair, tracers, hit markers. Every shot is checked and raycast on the server.
 - [ ] **M3 - Go live (needs Niv).** Publish as private, invite friends, test on real
       servers, save Wins with DataStore. Stops for Niv: publishing needs their account.
 - [ ] **M4 - Friends' content.** Drop-in monster models and arenas, then whatever the
@@ -46,6 +53,11 @@ Each one ends with something you can open and try.
 - Only touching the cube gives a point. Dying, leaving and time running out end the duel with no point.
 - The cube hides behind cover and spawns face the middle of the room, so a duel is a search, not
   a straight run. Hiding spots are mirrored so neither spawn has an edge.
+- Duel health is its own number in Player attributes, not `Humanoid.Health`. A Humanoid at 0 is
+  dead for good, and a knockdown has to come back. Damage is a share of max health.
+- The client only sends where it aimed. The server checks the duel is live, the shooter is up and
+  not firing too fast, then raycasts from the blaster's muzzle, so cover blocks shots.
+- 2 seconds of protection after getting up, so the leader can't keep someone on the floor.
 - Forms are full character swaps (`player.Character = model`), the same path a friend's
   rigged monster will use. Placeholders are recoloured default rigs.
 
@@ -56,10 +68,10 @@ Update this section whenever work stops, so a fresh session can continue.
 - M1 and M2 are done and verified on 2026-11-02: 11 unit tests, 56 checks in the two-player
   Studio test, screenshots reviewed. Next is M3, which needs Niv.
 - The bigger room is on the `bigger-arena` branch, verified on 2026-11-10 with 58 checks and
-  a top-down screenshot. The friends' next ask is a fighting engine (HP, damage, hitboxes, a
-  toy blaster), planned on `toy-blaster` on top of it.
+  a top-down screenshot. The toy blaster is on `toy-blaster`, built on top of it.
 - The code is on GitHub at https://github.com/nivsasi1/cahotic-blox. From here all work goes on
   branches with pull requests into `main`. [ROADMAP.md](ROADMAP.md) maps the code.
 - Not covered by the automated test: a real mouse click and the hover highlight (the test calls
-  the raycast directly), and anything on real Roblox servers.
-- Rules from the owner: no combat, powers, DNA or monster models until the friends decide.
+  the raycast directly), how mouse aiming and the shoulder camera feel, the phone FIRE button,
+  and lag on real Roblox servers.
+- Rules from the owner: no powers, DNA or monster models until the friends decide.
