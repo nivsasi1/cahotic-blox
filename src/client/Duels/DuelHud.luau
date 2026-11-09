@@ -137,7 +137,7 @@ end
 
 function phases.live(payload: Payload, mine: number)
 	pop("GO!", Ui.colors.accent)
-	goalText.Text = "Touch the black cube first!"
+	goalText.Text = "Find the black cube and touch it!"
 	task.delay(0.8, function()
 		if mine == step then
 			big.Text = ""

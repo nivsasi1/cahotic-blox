@@ -15,7 +15,7 @@ return {
 	-- Duel timing, in seconds
 	FADE_TIME = 0.4,
 	COUNTDOWN = 3,
-	DUEL_TIMEOUT = 60,
+	DUEL_TIMEOUT = 90,
 	RESULT_TIME = 3,
 
 	-- Stand-ins until the real monster models land in assets/forms

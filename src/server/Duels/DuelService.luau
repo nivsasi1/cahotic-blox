@@ -169,6 +169,7 @@ end
 
 local function run(duel: Duel)
 	local formFirst, formSecond = FormService.pickPair()
+	Arenas.placeCube(duel.room)
 
 	tell(duel, { phase = "starting" })
 	task.wait(Config.FADE_TIME)
