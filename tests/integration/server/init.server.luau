@@ -127,6 +127,36 @@ local function walkToCube(player: Player, cube: BasePart)
 	ask(player, "moveTo", cube.Position)
 end
 
+-- Like shot(), but the shooter fires just before its picture so the tracer is in it
+local function shotWhileFiring(name: string, shooter: Player, point: Vector3)
+	task.wait(0.3)
+	for _, player in testPlayers do
+		if player == shooter then
+			task.spawn(ask, player, "fireAndCapture", point)
+		else
+			task.spawn(ask, player, "capture")
+		end
+	end
+	print(`[TEST] SHOT {name}`)
+	task.wait(1)
+end
+
+local function hp(player: Player): any
+	return player:GetAttribute("HP")
+end
+
+local function aim(player: Player, partName: string): Vector3
+	return ((player.Character :: Model):FindFirstChild(partName, true) :: BasePart).Position
+end
+
+-- Puts both players at spots in Room1, measured from the room's center
+local function standAt(a: Player, spotA: Vector3, b: Player, spotB: Vector3)
+	local center = workspace.Arenas.Room1:GetPivot().Position
+	ask(a, "teleportTo", center + spotA)
+	ask(b, "teleportTo", center + spotB)
+	task.wait(0.8)
+end
+
 local function waitForPlayers(): (Player, Player)
 	assert(waitUntil(function()
 		return #Players:GetPlayers() >= 2
@@ -210,7 +240,7 @@ local function testCubeWin(a: Player, b: Player)
 	check("walking animation plays on the form", ask(a, "animating"))
 	check("reaching the cube gives a win", waitUntil(function()
 		return wins(a) == winsA + 1
-	end, 15), wins(a))
+	end, 15), `{wins(a)}, stood at {root(a) and (root(a) :: BasePart).Position}, cube at {cube.Position}`)
 	check("the other player gets nothing", wins(b) == winsB)
 	check("winner sees the result", ask(a, "big") == "YOU WIN", ask(a, "big"))
 	check("loser sees the result", ask(b, "big") == "YOU LOST", ask(b, "big"))
@@ -219,6 +249,118 @@ local function testCubeWin(a: Player, b: Player)
 	check("players got their own avatar back", (a.Character :: any).Humanoid.DisplayName == a.DisplayName)
 	check("controls still work after the duel", ask(a, "canMove"))
 	shot("back_in_hub")
+end
+
+local function testBlaster(a: Player, b: Player)
+	ask(a, "rawFire", aim(b, "Head"))
+	task.wait(0.3)
+	check("shots in the hub do nothing", hp(b) == nil and not ask(a, "fireAt", aim(b, "Head")), hp(b))
+
+	local winsA = wins(a)
+	startDuel(a, b)
+	check("both players start with full health", hp(a) == 100 and hp(b) == 100, `{hp(a)} {hp(b)}`)
+	check("both players hold a toy blaster", (a.Character :: Model):FindFirstChild("ToyBlaster") ~= nil)
+	ask(a, "rawFire", aim(b, "Head"))
+	task.wait(0.3)
+	check("shots during the countdown do nothing", hp(b) == 100, hp(b))
+	check("blaster duel goes live", waitLive(a, b))
+
+	local cube = workspace.Arenas.Room1.Cube
+	lastCubeSpot = cube.Position
+	local hud = ask(a, "hud")
+	check("crosshair and both health bars show", hud.crosshair and hud.vitals and hud.mine == "100" and hud.theirs == "100", hud)
+	local shoulder = ask(a, "shoulder")
+	check("the mouse locks to the crosshair", not shoulder.mouse or shoulder.locked, shoulder)
+
+	for _, junk in { "junk", Vector3.new(0 / 0, 0, 0), Vector3.new(1e9, 0, 0), {} } do
+		ask(a, "rawFire", junk)
+	end
+	task.wait(0.3)
+	check("junk shots do nothing", hp(b) == 100, hp(b))
+
+	-- A pillar stands between these two spots
+	standAt(a, Vector3.new(24, 4, -42), b, Vector3.new(24, 4, -12))
+	ask(a, "fireAt", aim(b, "Head"))
+	task.wait(0.4)
+	check("cover blocks a shot", hp(b) == 100, hp(b))
+
+	-- Open floor along the north alcove, nothing in between
+	standAt(a, Vector3.new(-12, 4, -42), b, Vector3.new(12, 4, -42))
+	ask(a, "fireAt", aim(b, "Head"))
+	check("a headshot takes 35%", waitUntil(function()
+		return hp(b) == 65
+	end, 2), hp(b))
+	local marker = ask(a, "hud")
+	check("the shooter sees a red headshot marker", marker.hitMarker and marker.hitMarkerColor.R > 0.9 and marker.hitMarkerColor.G < 0.5, marker.hitMarkerColor)
+	check("the target's bar drops", ask(b, "hud").mine == "65" and ask(a, "hud").theirs == "65", ask(b, "hud").mine)
+
+	task.wait(0.3)
+	ask(a, "rawFire", aim(b, "Head"), 3)
+	task.wait(0.5)
+	check("three shots at once count as one", hp(b) == 30, hp(b))
+
+	shotWhileFiring("blaster_hit", a, aim(b, "UpperTorso"))
+	check("a body shot takes 15%", hp(b) == 15, hp(b))
+
+	task.wait(0.3)
+	ask(a, "fireAt", aim(b, "Head"))
+	check("running out of health knocks you down", waitUntil(function()
+		return b:GetAttribute("Downed") == true
+	end, 2), hp(b))
+	check("a knocked down player is held still", hp(b) == 0 and root(b) ~= nil and (root(b) :: BasePart).Anchored)
+	task.wait(0.5)
+	local downedHud = ask(b, "hud")
+	check("they see the knocked down screen", downedHud.downed and string.find(downedHud.downedText, "Up in", 1, true) ~= nil, downedHud.downedText)
+	check("the shooter is told to go for the cube", string.find(ask(a, "hud").banner, "Find the cube", 1, true) ~= nil, ask(a, "hud").banner)
+	shot("knockdown")
+
+	ask(a, "fireAt", aim(b, "Head"))
+	task.wait(0.3)
+	check("shots do nothing while down", hp(b) == 0 and b:GetAttribute("Downed") == true, hp(b))
+	check("a downed player's blaster won't fire", not ask(b, "fireAt", aim(a, "Head")))
+	ask(b, "rawFire", aim(a, "Head"))
+	task.wait(0.3)
+	check("a downed player can't hurt anyone", hp(a) == 100, hp(a))
+
+	local winsB = wins(b)
+	local cubeSpot = cube.CFrame
+	cube.CFrame = (root(b) :: BasePart).CFrame
+	task.wait(0.5)
+	check("a downed player can't win with the cube", DuelService.isBusy(b) and wins(b) == winsB)
+	cube.CFrame = cubeSpot
+
+	check("they get up after the knockdown", waitUntil(function()
+		return b:GetAttribute("Downed") == false
+	end, Config.KNOCKDOWN_TIME + 1))
+	check("getting up lets them move again", root(b) ~= nil and not (root(b) :: BasePart).Anchored)
+	check("they shimmer while protected", b:GetAttribute("Protected") == true and (b.Character :: Model):FindFirstChild("GetUpShield") ~= nil)
+
+	local before = hp(b)
+	ask(a, "fireAt", aim(b, "Head"))
+	task.wait(0.3)
+	check("shots do nothing during the protection", hp(b) >= before, `{before} -> {hp(b)}`)
+	shot("get_up")
+	local rising = hp(b)
+	task.wait(1)
+	check("health refills after getting up", hp(b) > rising, `{rising} -> {hp(b)}`)
+
+	check("protection runs out", waitUntil(function()
+		return b:GetAttribute("Protected") == false
+	end, Config.GETUP_PROTECTION + 1))
+	before = hp(b)
+	ask(a, "fireAt", aim(b, "UpperTorso"))
+	task.wait(0.3)
+	check("shots count again after the protection", hp(b) < before, `{before} -> {hp(b)}`)
+
+	-- The hut is the hardest spot to walk into, so this duel always ends there
+	cube.CFrame = (workspace.Arenas.Room1.CubeSpots.Hut :: BasePart).CFrame
+	walkToCube(a, cube)
+	check("the cube still wins after a knockdown, even in the hut", waitUntil(function()
+		return wins(a) == winsA + 1
+	end, 15), `{wins(a)}, stood at {root(a) and (root(a) :: BasePart).Position}`)
+	backToHub(a, b)
+	check("health and blasters are gone after the duel", hp(a) == nil and (a.Character :: Model):FindFirstChild("ToyBlaster") == nil)
+	check("the health bars hide after the duel", not ask(a, "hud").vitals)
 end
 
 local function testDying(a: Player, b: Player)
@@ -268,6 +410,7 @@ local function main()
 	local a, b = waitForPlayers()
 	testInvites(a, b)
 	testCubeWin(a, b)
+	testBlaster(a, b)
 	testDying(a, b)
 	testTimeout(a, b)
 	testLeaving(a, b)

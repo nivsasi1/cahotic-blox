@@ -16,11 +16,19 @@ Setup is in the [README](README.md). Milestones and decisions are in [PLAN.md](P
    from `RoomPool`.
 5. **Teleport and transform.** `DuelService` fades the screen, `Arenas` hides the cube on one of
    the room's spots, `FormService` swaps each character for a form, and `Arenas` says where each
-   player stands, facing the middle of the room. Players are frozen for the countdown.
-6. **Search.** `DuelService` unfreezes everyone and listens for a touch on the cube. It sends every
-   step to `DuelHud` through `DuelState`, and `DuelCamera` points the camera the way the form faces.
-7. **Win and go home.** The first touch calls `ScoreService.award`. Everyone reloads into their own
-   avatar on the hub spawn, and the room goes back to `RoomPool`.
+   player stands, facing the middle of the room. `HealthService` fills both health bars and
+   `BlasterService` hands out the toy blasters. Players are frozen for the countdown.
+6. **Search and fight.** `DuelService` unfreezes everyone and listens for a touch on the cube. It
+   sends every step through `DuelState` to `DuelHud`, `CombatHud`, `Blaster` and `ShoulderCamera`.
+   A click fires `BlasterFire` with the point under the crosshair. `BlasterService` checks the
+   shot, raycasts it from the blaster's muzzle, and tells `HealthService` about a hit. Both
+   players get a `BlasterShot` to draw.
+7. **Knockdowns.** At zero health `HealthService` anchors the player on their back for 5 seconds,
+   then stands them up with 2 seconds of protection while health refills. A knocked down player
+   can't shoot or take the cube. Shooting never wins a duel, it only buys time to search.
+8. **Win and go home.** The first touch calls `ScoreService.award`. Health and blasters are
+   cleared, everyone reloads into their own avatar on the hub spawn, and the room goes back to
+   `RoomPool`.
 
 A duel can also end by someone dying, leaving, or time running out. None of those give a point.
 
@@ -34,9 +42,14 @@ docs/screenshots/                   pictures for the README
 src/
   shared/                           used by server and client
     Config.luau                     every number you might want to tweak
-    Characters.luau                 player to body, and body part to player
+    Characters.luau                 player to body, body part to player, freezing a body
   server/
     init.server.luau                starts everything in order
+    Combat/
+      BlasterService.luau           hands out blasters and checks every shot
+      HealthService.luau            health per duelist, knockdowns, getting up
+      Vitals.luau                   health, knockdown and refill rules (pure logic)
+      Cooldown.luau                 how often a player may fire (pure logic)
     Duels/
       DuelService.luau              runs a duel from start to finish
       Arenas.luau                   builds the rooms, hides the cube, finds the spawn points
@@ -50,6 +63,11 @@ src/
       ScoreService.luau             the Wins scoreboard
   client/
     init.client.luau                connects everything, no logic of its own
+    Combat/
+      Blaster.luau                  firing, tracers, muzzle flash, the phone FIRE button
+      CombatHud.luau                crosshair, hit markers, health bars, knocked down screen
+      ShoulderCamera.luau           over-the-shoulder camera and mouse lock while live
+      Sfx.luau                      plays the sounds from Config.SOUNDS
     Common/
       Ui.luau                       colors and UI building blocks
       Toast.luau                    short messages, like "Get closer first"
@@ -63,7 +81,7 @@ src/
       InviteWindow.luau             the window at the top for the inviter
       InvitePopup.luau              the Accept and Decline popup
 tests/
-  unit.luau                         invite and room logic, runs in the terminal
+  unit.luau                         invite, room, health and cooldown logic, runs in the terminal
   integration/                      plays the real game in Studio with two clients
 ```
 
@@ -90,6 +108,12 @@ Rojo builds the place from these files. `default.project.json` is the map betwee
 | Change the hub map | `default.project.json`, under `Workspace` |
 | Change the duel room | `assets/arenas/ArenaTemplate.model.json` |
 | Add or move a cube hiding spot | the `CubeSpots` folder in `ArenaTemplate.model.json` |
+| Change damage, fire rate, knockdown or refill time | the combat settings in `Config.luau` |
+| Change what a shot checks or hits | `onFire` in `src/server/Combat/BlasterService.luau` |
+| Change how the blaster looks | `build` in `BlasterService.luau` |
+| Change knockdown and getting up | `layDown` and `standUp` in `src/server/Combat/HealthService.luau` |
+| Change a sound | `SOUNDS` in `Config.luau` |
+| Change the aiming camera | `OFFSET` and `ZOOM` in `src/client/Combat/ShoulderCamera.luau` |
 | Change how you win | `goLive` in `src/server/Duels/DuelService.luau` |
 | Change what ends a duel | the calls to `finish` in `DuelService.luau` |
 | Change who can invite whom | `onSend` in `InviteService.luau` and `send` in `InviteBook.luau` |
@@ -125,7 +149,20 @@ All in `src/shared/Config.luau`:
 | `COUNTDOWN` | 3 | Seconds before the search starts |
 | `DUEL_TIMEOUT` | 90 | Seconds before a duel ends with no winner |
 | `RESULT_TIME` | 3 | Seconds the result stays on screen |
+| `DUEL_HEALTH` | 100 | Health at the start of a duel |
+| `BLASTER_BODY_DAMAGE` | 0.15 | Share of max health a body shot takes |
+| `BLASTER_HEAD_DAMAGE` | 0.35 | Share of max health a shot on a part named `Head` takes |
+| `BLASTER_COOLDOWN` | 0.25 | Seconds between shots, so 4 a second |
+| `BLASTER_COOLDOWN_SLACK` | 0.05 | The server allows shots this much faster, since network timing jitters |
+| `BLASTER_RANGE` | 250 | Studs a shot travels |
+| `KNOCKDOWN_TIME` | 5 | Seconds on the floor at zero health |
+| `REGEN_TIME` | 6 | Seconds to refill from empty to full after getting up |
+| `GETUP_PROTECTION` | 2 | Seconds after getting up where shots do nothing |
+| `SOUNDS` | sounds that ship with Roblox | Blaster, hit marker, knockdown and get up sounds |
 | `PLACEHOLDER_FORMS` | Ember, Tide, Moss | Stand-ins used while `assets/forms` has no models |
+
+Damage is a share of max health, so changing `DUEL_HEALTH` keeps the balance: 7 body shots or 3
+headshots knock someone down.
 
 ## Project files
 
@@ -148,6 +185,15 @@ happened.
 | `InviteAnswer` | client to server | `true` or `false` |
 | `InviteState` | server to client | `{ kind, ... }`, see below |
 | `DuelState` | server to client | `{ phase, ... }`, see below |
+| `BlasterFire` | client to server | the world point under the crosshair |
+| `BlasterShot` | server to client | `{ shooter, from, to, part, result }`, sent to both duelists |
+
+`BlasterShot` has `part` (`head` or `body`) and `result` (`hit`, `down` or `ignored`) only when the
+shot reached the opponent. The shooter draws their own tracer the moment they click and uses this
+for the hit marker. The opponent uses it to draw the shot.
+
+Health lives in Player attributes, set only by the server while a duel runs: `HP`, `MaxHP`,
+`Downed` and `Protected`. Any client can read them, which is how `CombatHud` draws both bars.
 
 `InviteState` kinds:
 
@@ -169,13 +215,15 @@ happened.
 | `returning` | none |
 | `ended` | none |
 
-A new phase needs a matching function in `phases` in `DuelHud.luau`.
+A new phase needs a matching function in `phases` in `DuelHud.luau`. The combat modules only act
+on `countdown`, `live`, `result` and `ended`.
 
 ## Adding a monster
 
 1. Export the rigged model as an `.rbxm` file into `assets/forms`. The file name is the form's
    name, so `Dragon.rbxm` shows up as Dragon.
-2. The model needs a `Humanoid`, a `HumanoidRootPart` set as its `PrimaryPart`, and Motor6D joints.
+2. The model needs a `Humanoid`, a `HumanoidRootPart` set as its `PrimaryPart`, Motor6D joints or
+   bones, and a part named `Head` for the name tag and headshots.
 3. Rebuild, or let `rojo serve` pick it up.
 
 `FormService.pickPair` gives each player a random form, two different ones when there are at least
@@ -195,8 +243,10 @@ start it from `init.server.luau` or `init.client.luau`.
 ## Rules that keep this working
 
 - **The server decides.** Never trust what a client sends. Check it in the server code.
-- **Keep pure logic pure.** `InviteBook` and `RoomPool` make no Roblox calls, which is why Lune can
-  test them in the terminal. Do the same for new logic where you can.
+- **Keep pure logic pure.** `InviteBook`, `RoomPool`, `Vitals` and `Cooldown` make no Roblox calls,
+  which is why Lune can test them in the terminal. Do the same for new logic where you can.
+- **Requires go one way.** When two services need each other, pass a function in at start, like
+  `BlasterService.start(DuelService.opponentIfLive)` in `init.server.luau`.
 - **Use `CFrame`, never `Position`, in Rojo JSON.** `rojo build` keeps `Position`, but Studio
   ignores it on load and the part lands at the origin.
 - **Files are the source of truth.** A script edited in Studio is lost on the next build. Models

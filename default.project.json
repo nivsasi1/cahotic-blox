@@ -12,7 +12,9 @@
         "InviteCancel": { "$className": "RemoteEvent" },
         "InviteAnswer": { "$className": "RemoteEvent" },
         "InviteState": { "$className": "RemoteEvent" },
-        "DuelState": { "$className": "RemoteEvent" }
+        "DuelState": { "$className": "RemoteEvent" },
+        "BlasterFire": { "$className": "RemoteEvent" },
+        "BlasterShot": { "$className": "RemoteEvent" }
       }
     },
     "ServerScriptService": {

@@ -3,9 +3,11 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Arenas = require(script.Parent.Arenas)
+local BlasterService = require(script.Parent.Parent.Combat.BlasterService)
 local Characters = require(ReplicatedStorage.Shared.Characters)
 local Config = require(ReplicatedStorage.Shared.Config)
 local FormService = require(script.Parent.Parent.Forms.FormService)
+local HealthService = require(script.Parent.Parent.Combat.HealthService)
 local RoomPool = require(script.Parent.RoomPool)
 local ScoreService = require(script.Parent.Parent.Score.ScoreService)
 
@@ -33,6 +35,15 @@ function DuelService.freeRooms(): number
 	return pool:freeCount()
 end
 
+-- The other duelist, but only while the duel is live, so nobody can be hit during the countdown
+function DuelService.opponentIfLive(player: Player): Player?
+	local duel = duelOf[player]
+	if not duel or duel.phase ~= "live" then
+		return nil
+	end
+	return if duel.players[1] == player then duel.players[2] else duel.players[1]
+end
+
 local function isHere(player: Player): boolean
 	return player.Parent == Players
 end
@@ -45,17 +56,6 @@ local function tell(duel: Duel, payload: { [string]: any })
 	end
 end
 
--- Anchoring holds any rig still, so this needs no per-form walk speed
-local function setFrozen(player: Player, frozen: boolean)
-	local root = Characters.rootPart(player)
-	if root then
-		root.Anchored = frozen
-		if not frozen then
-			root:SetNetworkOwner(player)
-		end
-	end
-end
-
 local function showResult(duel: Duel, winner: Player?, reason: string)
 	for _, connection in duel.connections do
 		connection:Disconnect()
@@ -64,8 +64,10 @@ local function showResult(duel: Duel, winner: Player?, reason: string)
 		ScoreService.award(winner)
 	end
 	for _, player in duel.players do
+		HealthService.clear(player)
 		if isHere(player) then
-			setFrozen(player, true)
+			BlasterService.take(player)
+			Characters.setFrozen(player, true)
 		end
 	end
 	tell(duel, { phase = "result", winner = winner, reason = reason })
@@ -128,15 +130,16 @@ local function goLive(duel: Duel)
 	table.insert(
 		duel.connections,
 		Arenas.cube(duel.room).Touched:Connect(function(part)
+			-- A knocked down player is anchored, so they can't touch it anyway. This makes it a rule.
 			local player = Characters.playerFromPart(part)
-			if player and duelOf[player] == duel and duel.phase == "live" then
+			if player and duelOf[player] == duel and duel.phase == "live" and not HealthService.isDown(player) then
 				finish(duel, player, "cube")
 			end
 		end)
 	)
 
 	for _, player in duel.players do
-		setFrozen(player, false)
+		Characters.setFrozen(player, false)
 	end
 	tell(duel, { phase = "live", seconds = Config.DUEL_TIMEOUT })
 
@@ -154,7 +157,9 @@ local function placePlayers(duel: Duel, formFirst: string?, formSecond: string?)
 	FormService.apply(first, formFirst, spawnFirst)
 	FormService.apply(second, formSecond, spawnSecond)
 	for _, player in duel.players do
-		setFrozen(player, true)
+		Characters.setFrozen(player, true)
+		HealthService.reset(player)
+		BlasterService.give(player)
 		watchForDeath(duel, player)
 	end
 end

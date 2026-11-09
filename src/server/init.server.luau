@@ -1,10 +1,15 @@
 --!strict
 local Arenas = require(script.Duels.Arenas)
+local BlasterService = require(script.Combat.BlasterService)
+local DuelService = require(script.Duels.DuelService)
 local FormService = require(script.Forms.FormService)
+local HealthService = require(script.Combat.HealthService)
 local InviteService = require(script.Invites.InviteService)
 local ScoreService = require(script.Score.ScoreService)
 
 ScoreService.start()
 Arenas.build()
 FormService.start()
+HealthService.start()
+BlasterService.start(DuelService.opponentIfLive)
 InviteService.start()

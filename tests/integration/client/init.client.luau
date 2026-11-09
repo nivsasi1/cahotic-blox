@@ -10,8 +10,10 @@ local invites = script.Parent:WaitForChild("Client"):WaitForChild("Invites")
 local InvitePopup = require(invites:WaitForChild("InvitePopup"))
 local InviteWindow = require(invites:WaitForChild("InviteWindow"))
 local PlayerPicker = require(invites:WaitForChild("PlayerPicker"))
+local Blaster = require(script.Parent:WaitForChild("Client"):WaitForChild("Combat"):WaitForChild("Blaster"))
 
 local bus = ReplicatedStorage:WaitForChild("TestBus") :: RemoteFunction
+local blasterFire = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("BlasterFire") :: RemoteEvent
 
 local function inside(gui: GuiObject): boolean
 	local viewport = (workspace.CurrentCamera :: Camera).ViewportSize
@@ -144,6 +146,46 @@ function commands.capture()
 		task.wait(0.05)
 	end
 	return done
+end
+
+function commands.fireAt(point: Vector3)
+	return Blaster.fireAt(point)
+end
+
+-- Takes the picture a moment after firing, while the tracer is still in the air
+function commands.fireAndCapture(point: Vector3)
+	Blaster.fireAt(point)
+	return commands.capture()
+end
+
+-- Straight to the server, skipping every check the client does
+function commands.rawFire(value: any, count: number?)
+	for _ = 1, count or 1 do
+		blasterFire:FireServer(value)
+	end
+end
+
+function commands.hud()
+	local hud = (playerGui :: any).CombatHud
+	return {
+		crosshair = hud.Crosshair.Visible,
+		vitals = hud.Vitals.Visible,
+		mine = hud.Vitals.Mine.Value.Text,
+		theirs = hud.Vitals.Theirs.Value.Text,
+		downed = hud.Downed.Visible,
+		downedText = hud.Downed.Sub.Text,
+		banner = if hud.Banner.Visible then hud.Banner.Text else "",
+		hitMarker = hud.HitMarker.Visible,
+		hitMarkerColor = hud.HitMarker:GetChildren()[1].BackgroundColor3,
+	}
+end
+
+function commands.shoulder()
+	local UserInputService = game:GetService("UserInputService")
+	return {
+		mouse = UserInputService.MouseEnabled,
+		locked = UserInputService.MouseBehavior == Enum.MouseBehavior.LockCenter,
+	}
 end
 
 function commands.canMove()
