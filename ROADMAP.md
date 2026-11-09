@@ -14,10 +14,11 @@ Setup is in the [README](README.md). Milestones and decisions are in [PLAN.md](P
    Accept and Decline, and the answer comes back through `InviteAnswer`.
 4. **Reserve a room.** On accept, `InviteService` calls `DuelService.start`, which takes a room
    from `RoomPool`.
-5. **Teleport and transform.** `DuelService` fades the screen, `FormService` swaps each character
-   for a form, and `Arenas` says where each player stands. Players are frozen for the countdown.
-6. **Race.** `DuelService` unfreezes everyone and listens for a touch on the cube. It sends every
-   step to `DuelHud` through `DuelState`, and `DuelCamera` points the camera at the cube.
+5. **Teleport and transform.** `DuelService` fades the screen, `Arenas` hides the cube on one of
+   the room's spots, `FormService` swaps each character for a form, and `Arenas` says where each
+   player stands, facing the middle of the room. Players are frozen for the countdown.
+6. **Search.** `DuelService` unfreezes everyone and listens for a touch on the cube. It sends every
+   step to `DuelHud` through `DuelState`, and `DuelCamera` points the camera the way the form faces.
 7. **Win and go home.** The first touch calls `ScoreService.award`. Everyone reloads into their own
    avatar on the hub spawn, and the room goes back to `RoomPool`.
 
@@ -38,7 +39,7 @@ src/
     init.server.luau                starts everything in order
     Duels/
       DuelService.luau              runs a duel from start to finish
-      Arenas.luau                   builds the rooms, finds the cube and spawn points
+      Arenas.luau                   builds the rooms, hides the cube, finds the spawn points
       RoomPool.luau                 which rooms are reserved (pure logic)
     Forms/
       FormService.luau              picks forms and swaps the character
@@ -88,6 +89,7 @@ Rojo builds the place from these files. `default.project.json` is the map betwee
 | Add a real monster | `assets/forms`, see [Adding a monster](#adding-a-monster) |
 | Change the hub map | `default.project.json`, under `Workspace` |
 | Change the duel room | `assets/arenas/ArenaTemplate.model.json` |
+| Add or move a cube hiding spot | the `CubeSpots` folder in `ArenaTemplate.model.json` |
 | Change how you win | `goLive` in `src/server/Duels/DuelService.luau` |
 | Change what ends a duel | the calls to `finish` in `DuelService.luau` |
 | Change who can invite whom | `onSend` in `InviteService.luau` and `send` in `InviteBook.luau` |
@@ -98,8 +100,13 @@ Rojo builds the place from these files. `default.project.json` is the map betwee
 | Change invite error messages | `MESSAGES` in `src/client/Common/Toast.luau` |
 | Add a remote event | `default.project.json`, under `Remotes`, then rebuild |
 
-The room needs parts named exactly `Cube`, `SpawnA` and `SpawnB`, because `Arenas.luau` finds them
-by name.
+The room is 128 by 128 studs with cover in the middle: a hut, two alcoves, pillars, crates and low
+walls. It needs parts named exactly `Cube`, `SpawnA` and `SpawnB`, because `Arenas.luau` finds them
+by name. Each part in the `CubeSpots` folder is a place the cube can hide. Keep them invisible with
+CanCollide, CanTouch and CanQuery off, and mirror them so neither spawn is closer on average. The
+cube never lands on the same spot twice in a row.
+
+![The room from above, cube between the south crates](docs/screenshots/room-top.png)
 
 ## Settings
 
@@ -115,8 +122,8 @@ All in `src/shared/Config.luau`:
 | `ROOM_ORIGIN` | 3000, 100, 0 | Where the rooms start, far enough that the hub can't see them |
 | `ROOM_SPACING` | 200 | Studs between rooms |
 | `FADE_TIME` | 0.4 | Seconds for the screen fade |
-| `COUNTDOWN` | 3 | Seconds before the race starts |
-| `DUEL_TIMEOUT` | 60 | Seconds before a duel ends with no winner |
+| `COUNTDOWN` | 3 | Seconds before the search starts |
+| `DUEL_TIMEOUT` | 90 | Seconds before a duel ends with no winner |
 | `RESULT_TIME` | 3 | Seconds the result stays on screen |
 | `PLACEHOLDER_FORMS` | Ember, Tide, Moss | Stand-ins used while `assets/forms` has no models |
 
