@@ -9,7 +9,7 @@ local localPlayer = Players.LocalPlayer
 
 local DuelCamera = {}
 
--- Players land facing the cube, but the camera still points wherever it did in the hub
+-- Players land facing the middle of the room, but the camera still points wherever it did in the hub
 function DuelCamera.lookWhereFacing()
 	local root = Characters.rootPart(localPlayer)
 	local camera = workspace.CurrentCamera

@@ -1,12 +1,12 @@
 # Morph Duels
 
-A Roblox game. Walk up to a player in the hub, invite them to a duel, and race them to a black cube
-in your own room, each in a different form. The winner gets a point on the scoreboard.
+A Roblox game. Walk up to a player in the hub, invite them to a duel, and race them to find a black
+cube hidden in your own room, each in a different form. The winner gets a point on the scoreboard.
 
 Morph Duels is a working title. The idea is inspired by the show Chaotic, but the game needs its own
 name, creatures and art before it goes public on Roblox.
 
-![Racing to the cube](docs/screenshots/4-race.png)
+![Searching for the cube](docs/screenshots/4-race.png)
 
 ## What works now
 
@@ -14,7 +14,8 @@ name, creatures and art before it goes public on Roblox.
 - An invite window at the top of the screen, and an Accept or Decline popup for the other player.
 - 8 duel rooms that are reserved and released automatically.
 - Teleporting into a room and turning into a different form.
-- A race to the black cube, with Wins on the scoreboard.
+- A 128 by 128 room with cover, where the black cube hides at a different spot each duel.
+- 90 seconds to find it first, with Wins on the scoreboard.
 - Dying, leaving or running out of time ends the duel with no point.
 
 Combat, powers, DNA, other worlds and monster models are not in yet. Those come next, see
