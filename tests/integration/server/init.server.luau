@@ -39,6 +39,7 @@ local function ask(player: Player, command: string, ...: any): any
 end
 
 local testPlayers: { Player } = {}
+local lastCubeSpot = Vector3.zero
 
 local function shot(name: string)
 	task.wait(0.3)
@@ -100,6 +101,30 @@ local function backToHub(from: Player, to: Player)
 		return inHub(from) and inHub(to)
 	end, 5))
 	task.wait(1)
+end
+
+local function onSpot(room: Model): boolean
+	local cube = room:FindFirstChild("Cube") :: BasePart
+	for _, spot in (room:FindFirstChild("CubeSpots") :: Folder):GetChildren() do
+		if ((spot :: BasePart).Position - cube.Position).Magnitude < 0.1 then
+			return true
+		end
+	end
+	return false
+end
+
+-- The cube can sit behind cover, so stand on its open side first and walk the last few studs
+local function walkToCube(player: Player, cube: BasePart)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { cube }
+	for _, direction in { Vector3.zAxis, -Vector3.zAxis, Vector3.xAxis, -Vector3.xAxis } do
+		if not workspace:Raycast(cube.Position, direction * 9, params) then
+			ask(player, "teleportTo", cube.Position + direction * 7 + Vector3.yAxis)
+			break
+		end
+	end
+	ask(player, "moveTo", cube.Position)
 end
 
 local function waitForPlayers(): (Player, Player)
@@ -172,10 +197,16 @@ local function testCubeWin(a: Player, b: Player)
 	shot("countdown")
 
 	check("cube goes live after the countdown", waitLive(a, b))
-	local cube = workspace.Arenas.Room1.Cube
-	ask(a, "moveTo", cube.Position)
-	task.wait(0.4)
+	local room = workspace.Arenas.Room1
+	local cube = room.Cube
+	check("cube is hidden on one of the spots", onSpot(room), cube.Position)
+	lastCubeSpot = cube.Position
+	task.wait(0.6) -- let "GO!" clear for a clean picture
+	ask(a, "topDown", room:GetPivot().Position)
+	shot("room_top")
+	ask(a, "restoreCamera")
 	shot("live")
+	walkToCube(a, cube)
 	check("walking animation plays on the form", ask(a, "animating"))
 	check("reaching the cube gives a win", waitUntil(function()
 		return wins(a) == winsA + 1
@@ -192,6 +223,8 @@ end
 
 local function testDying(a: Player, b: Player)
 	startDuel(b, a)
+	local cube = workspace.Arenas.Room1.Cube
+	check("the cube moves to a different spot next duel", (cube.Position - lastCubeSpot).Magnitude > 1, cube.Position)
 	check("second duel goes live", waitLive(b, a))
 	local winsA, winsB = wins(a), wins(b)
 	local victim = (b.Character :: Model):FindFirstChildOfClass("Humanoid") :: Humanoid

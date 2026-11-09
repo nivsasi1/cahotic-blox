@@ -32,20 +32,24 @@ Get-Process RobloxStudioBeta, RobloxCrashHandler -ErrorAction SilentlyContinue |
     Where-Object { $_.StartTime -gt $started.AddSeconds(-2) } |
     Stop-Process -Force -Confirm:$false
 
-# The test clients' screenshots land in Roblox's capture folder, named by process id and a 6-digit counter
-$shotNames = 'hub', 'invite_window', 'invite_popup', 'countdown', 'live', 'result', 'back_in_hub'
+# The test clients' screenshots land in Roblox's capture folder, named by process id and a counter.
+# The counter can skip numbers, so files are named by their order, matching the harness's SHOT lines.
+$shotNames = @($newLogs | Select-String -Pattern '\[TEST\] SHOT (\w+)' | ForEach-Object { $_.Matches[0].Groups[1].Value })
 $shots = "$root\.cache\shots"
 Remove-Item $shots -Recurse -Force -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force $shots | Out-Null
-$clients = @{}
+$clientNumber = 0
 Get-ChildItem "$env:LOCALAPPDATA\Roblox\tmp-capture-storage" -File |
-    Where-Object { $_.LastWriteTime -gt $started } |
+    Where-Object { $_.LastWriteTime -gt $started -and $_.Name -match '^wob-\d{7,}$' } |
+    Group-Object { $_.Name.Substring(4, $_.Name.Length - 10) } |
     Sort-Object Name | ForEach-Object {
-        if ($_.Name -match '^wob-(\d+)(\d{6})$') {
-            $client = $Matches[1]
-            $index = [int]$Matches[2]
-            if (-not $clients.ContainsKey($client)) { $clients[$client] = $clients.Count + 1 }
-            Copy-Item $_.FullName "$shots\$($shotNames[$index])_client$($clients[$client]).png"
+        $clientNumber++
+        $rank = 0
+        foreach ($file in ($_.Group | Sort-Object Name)) {
+            if ($rank -lt $shotNames.Count) {
+                Copy-Item $file.FullName "$shots\$($shotNames[$rank])_client$clientNumber.png"
+            }
+            $rank++
         }
     }
 

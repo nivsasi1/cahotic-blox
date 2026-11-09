@@ -93,6 +93,30 @@ function commands.moveTo(position: Vector3)
 	humanoid:MoveTo(position)
 end
 
+function commands.teleportTo(point: Vector3)
+	local character = localPlayer.Character :: Model
+	character:PivotTo(CFrame.new(point))
+	task.wait(0.2)
+end
+
+function commands.topDown(center: Vector3)
+	local camera = workspace.CurrentCamera :: Camera
+	camera.CameraType = Enum.CameraType.Scriptable
+	camera.CFrame = CFrame.lookAt(center + Vector3.new(0, 170, 0.01), center)
+	task.wait(0.3)
+end
+
+function commands.restoreCamera()
+	local camera = workspace.CurrentCamera :: Camera
+	local character = localPlayer.Character :: Model
+	local root = (character :: any).HumanoidRootPart :: BasePart
+	camera.CameraType = Enum.CameraType.Custom
+	camera.CameraSubject = character:FindFirstChildOfClass("Humanoid")
+	local forward = root.CFrame.LookVector
+	camera.CFrame = CFrame.lookAt(root.Position - forward * 16 + Vector3.yAxis * 7, root.Position + forward * 12)
+	task.wait(0.2)
+end
+
 function commands.animating()
 	local humanoid = (localPlayer.Character :: Model):FindFirstChildOfClass("Humanoid") :: Humanoid
 	local animator = humanoid:FindFirstChildOfClass("Animator")
